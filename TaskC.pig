@@ -1,9 +1,9 @@
 pages = LOAD 'hdfs://localhost:9000/project2/pages.csv' USING PigStorage(',')
          AS (PersonID: int, Name: chararray, Nationality: chararray, CountryCode: int, Hobby: chararray);
-pages_clean1 = FOREACH pages GENERATE PersonID, Nationality;
-pages_clean = FILTER pages_clean1 BY Nationality != 'Nationality';
+cleanedPages = FOREACH pages GENERATE PersonID, Nationality;
+cleanPages = FILTER cleanedPages BY Nationality != 'Nationality';
 
-citizensCountByCountry = GROUP pages_clean BY Nationality;
-citizensCountByCountry = FOREACH citizensCountByCountry GENERATE group AS Nationality, COUNT(pages_clean) AS CitizensCount;
+citizensByCountry = GROUP cleanPages BY Nationality;
+citizensByCountry = FOREACH citizensByCountry GENERATE group AS Nationality, COUNT(cleanPages) AS CitizensCount;
 
-STORE citizensCountByCountry INTO 'hdfs://localhost:9000/project2/TaskC.csv' USING PigStorage(',');
+STORE citizensByCountry INTO 'hdfs://localhost:9000/project2/TaskC.csv' USING PigStorage(',');
