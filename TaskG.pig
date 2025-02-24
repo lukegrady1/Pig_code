@@ -16,12 +16,12 @@ pages = LOAD 'hdfs://localhost:9000/project2/pages.csv' USING PigStorage(',') AS
     Hobby: chararray
 );
 pagesFilter = FILTER pages BY Name != 'Name';
-pagesFiltered = FOREACH pagesFilter GENERATE ID AS ID,Name;
+filtered_pages = FOREACH pagesFilter GENERATE ID AS ID,Name;
 groupLogs = GROUP accessLogsFiltered BY PersonID;
 accessTime = FOREACH groupLogs GENERATE group AS PersonID,ToDate(MAX(accessLogsFiltered.AccessTime),'yyyy-MM-dd HH:mm:ss') AS LatestAccessTime:datetime;
 peopleDisconnected = FILTER accessTime BY ABS(DaysBetween(LatestAccessTime,CurrentTime())) > (long)14;
-peopleDisconnectedFiltered = FOREACH peopleDisconnected GENERATE PersonID AS PersonID;
-people = JOIN peopleDisconnectedFiltered BY PersonID, pagesFiltered BY ID;
-output = FOREACH people GENERATE disconnected_people_filter::PersonID, filtered_pages1::Name;
-STORE output INTO 'hdfs://localhost:9000/project2/TaskG.csv' USING PigStorage(',');
+disconnected_people_filter = FOREACH peopleDisconnected GENERATE PersonID AS PersonID;
+people = JOIN disconnected_people_filter BY PersonID, filtered_pages BY ID;
+finalOutput = FOREACH people GENERATE disconnected_people_filter::PersonID, filtered_pages::Name;
+STORE finalOutput INTO 'hdfs://localhost:9000/project2/TaskG.csv' USING PigStorage(',');
 

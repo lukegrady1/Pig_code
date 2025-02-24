@@ -8,5 +8,5 @@ cleanedPages = FILTER cleanPages BY Name != 'Name';
 groupFriends = GROUP cleanFriends BY MyFriend;
 countFriends = FOREACH groupFriends GENERATE group,COUNT(cleanFriends) AS followers;
 joinedOutput = join cleanedPages BY ID LEFT OUTER, countFriends BY group;
-output = FOREACH joinedOutput GENERATE Name AS ownerName,(followers is not null ? followers : 0) AS count;
-STORE output INTO 'hdfs://localhost:9000/project2/TaskD.csv' USING PigStorage(',');
+finalOutput = FOREACH joinedOutput GENERATE Name AS ownerName,(followers is not null ? followers : 0) AS count;
+STORE finalOutput INTO 'hdfs://localhost:9000/project2/TaskD.csv' USING PigStorage(',');

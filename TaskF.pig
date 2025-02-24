@@ -11,9 +11,9 @@ cleanPages = FOREACH pages GENERATE ID,Name;
 cleanedPages = FILTER cleanPages BY Name != 'Name';
 
 joinedOutput = JOIN cleanedFriends BY (PersonID,MyFriend) LEFT OUTER, cleanedAccessLogs BY (ByWho,WhatPage);
-filteredOutput = FILTER joinedOutput BY access_logs_clean1::ByWho is null;
+filteredOutput = FILTER joinedOutput BY cleanedAccessLogs::ByWho is null;
 distinctPages = FOREACH (GROUP filteredOutput BY PersonID) GENERATE group AS PersonID;
 joinedPages = JOIN distinctPages BY PersonID, cleanedPages BY ID;
-output = FOREACH joinedPages GENERATE PersonID,Name;
+finalOutput = FOREACH joinedPages GENERATE PersonID,Name;
 
-STORE output INTO 'hdfs://localhost:9000/project2/TaskF.csv' USING PigStorage(',');
+STORE finalOutput INTO 'hdfs://localhost:9000/project2/TaskF.csv' USING PigStorage(',');

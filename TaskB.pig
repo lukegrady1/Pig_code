@@ -11,7 +11,7 @@ accessLogsCount = FOREACH accessLogsGrouped GENERATE group AS PageID,COUNT(clean
 sortedPages = ORDER accessLogsCount BY AccessCount DESC;
 popularPages = LIMIT sortedPages 10;
 mergedData = JOIN popularPages BY PageID, cleanUserPages BY PersonID;
-output = FOREACH mergedData GENERATE PageID,Name,Nationality;
-STORE output INTO 'hdfs://localhost:9000/project2/TaskB.csv' USING PigStorage(',');
+finalOutput = FOREACH mergedData GENERATE PageID,Name,Nationality;
+STORE finalOutput INTO 'hdfs://localhost:9000/project2/TaskB.csv' USING PigStorage(',');
 
 
